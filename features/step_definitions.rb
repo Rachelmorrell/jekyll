@@ -163,7 +163,7 @@ Given(%r!^I have a configuration file with "(.*)" set to "(.*)"$!) do |key, valu
     else
       {}
     end
-  config[key] = YAML.load(value)
+  config[key] = SafeYAML.load(value)
   Jekyll.set_timezone(value) if key == "timezone"
   File.write("_config.yml", YAML.dump(config))
 end
@@ -287,28 +287,28 @@ end
 
 #
 
-Then(%r!^I should (not )?see "(.*)" in "(.*)" if on Windows$!) do |negative, text, file|
+Then(%r!^I should (not )?see "(.*)" in "(.*)" if platform does not support symlinks$!) do |negative, text, file|
   step %(the "#{file}" file should exist)
   regexp = Regexp.new(text, Regexp::MULTILINE)
   if negative.nil? || negative.empty?
-    if Jekyll::Utils::Platforms.really_windows?
-      expect(file_contents(file)).to match regexp
-    else
+    if Platform.supports_symlink?
       expect(file_contents(file)).not_to match regexp
+    else
+      expect(file_contents(file)).to match regexp
     end
   end
 end
 
 #
 
-Then(%r!^I should (not )?see "(.*)" in "(.*)" unless Windows$!) do |negative, text, file|
+Then(%r!^I should (not )?see "(.*)" in "(.*)" if platform supports symlinks$!) do |negative, text, file|
   step %(the "#{file}" file should exist)
   regexp = Regexp.new(text, Regexp::MULTILINE)
   if negative.nil? || negative.empty?
-    if Jekyll::Utils::Platforms.really_windows?
-      expect(file_contents(file)).not_to match regexp
-    else
+    if Platform.supports_symlink?
       expect(file_contents(file)).to match regexp
+    else
+      expect(file_contents(file)).not_to match regexp
     end
   end
 end
@@ -363,7 +363,21 @@ end
 #
 
 Then(%r!^I should see today's time in "(.*)"$!) do |file|
-  step %(I should see "#{seconds_agnostic_time(Time.now)}" in "#{file}")
+  seconds = 3
+  build_time = Time.now
+  content = file_contents(file)
+  date_time_pattern = /(\d{4}-\d{2}-\d{2}\s\d+:\d{2}:\d{2})/
+  match_data = content.match(date_time_pattern)
+  expect(match_data).not_to be_nil, "No date-time pattern found in #{file}"
+  date_time_str = match_data.captures
+  file_time = Time.parse("#{date_time_str}")
+  time_difference = (build_time - file_time).abs
+  expect(time_difference).to be <= seconds, <<~MSG
+    Expected time in #{file} to be within #{seconds} seconds of build time.
+    Build time: #{build_time}
+    File time:  #{file_time}
+    Difference: #{time_difference} seconds
+  MSG
 end
 
 #

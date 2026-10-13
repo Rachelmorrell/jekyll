@@ -21,14 +21,14 @@ module Jekyll
           "ssl_key"              => ["--ssl-key [KEY]", "X.509 (SSL) Private Key."],
           "port"                 => ["-P", "--port [PORT]", "Port to listen on"],
           "show_dir_listing"     => ["--show-dir-listing",
-                                     "Show a directory listing instead of loading" \
-                                     " your index file.",],
+                                     "Show a directory listing instead of loading " \
+                                     "your index file.",],
           "skip_initial_build"   => ["skip_initial_build", "--skip-initial-build",
-                                     "Skips the initial site build which occurs before" \
-                                     " the server is started.",],
+                                     "Skips the initial site build which occurs before " \
+                                     "the server is started.",],
           "livereload"           => ["-l", "--livereload",
                                      "Use LiveReload to automatically refresh browsers",],
-          "livereload_ignore"    => ["--livereload-ignore ignore GLOB1[,GLOB2[,...]]",
+          "livereload_ignore"    => ["--livereload-ignore GLOB1[,GLOB2[,...]]",
                                      Array,
                                      "Files for LiveReload to ignore. " \
                                      "Remember to quote the values so your shell " \
@@ -71,7 +71,6 @@ module Jekyll
             end
 
             cmd.action do |_, opts|
-              opts["livereload_port"] ||= LIVERELOAD_PORT
               opts["serving"] = true
               opts["watch"]   = true unless opts.key?("watch")
 
@@ -94,6 +93,7 @@ module Jekyll
           opts = configuration_from_options(opts)
           destination = opts["destination"]
           if opts["livereload"]
+            opts["livereload_port"] ||= LIVERELOAD_PORT
             validate_options(opts)
             register_reload_hooks(opts)
           end
@@ -113,8 +113,8 @@ module Jekyll
         def validate_options(opts)
           if opts["livereload"]
             if opts["detach"]
-              Jekyll.logger.warn "Warning:", "--detach and --livereload are mutually exclusive." \
-                                 " Choosing --livereload"
+              Jekyll.logger.warn "Warning:", "--detach and --livereload are mutually exclusive. " \
+                                             "Choosing --livereload"
               opts["detach"] = false
             end
             if opts["ssl_cert"] || opts["ssl_key"]
@@ -132,21 +132,20 @@ module Jekyll
                    livereload_max_delay
                    livereload_ignore
                    livereload_port).any? { |o| opts[o] }
-            Jekyll.logger.abort_with "--livereload-min-delay, "\
-               "--livereload-max-delay, --livereload-ignore, and "\
-               "--livereload-port require the --livereload option."
+            Jekyll.logger.abort_with "--livereload-min-delay, --livereload-max-delay, " \
+                                     "--livereload-ignore, and --livereload-port require " \
+                                     "the --livereload option."
           end
         end
 
-        # rubocop:disable Metrics/AbcSize
         def register_reload_hooks(opts)
           require_relative "serve/live_reload_reactor"
           @reload_reactor = LiveReloadReactor.new
 
           Jekyll::Hooks.register(:site, :post_render) do |site|
-            regenerator = Jekyll::Regenerator.new(site)
-            @changed_pages = site.pages.select do |p|
-              regenerator.regenerate?(p)
+            @changed_pages = []
+            site.each_site_file do |item|
+              @changed_pages << item if site.regenerator.regenerate?(item)
             end
           end
 
@@ -160,7 +159,7 @@ module Jekyll
             if @changed_pages && @reload_reactor && @reload_reactor.running?
               ignore, @changed_pages = @changed_pages.partition do |p|
                 Array(opts["livereload_ignore"]).any? do |filter|
-                  File.fnmatch(filter, Jekyll.sanitized_path(p.relative_path))
+                  File.fnmatch(filter, p.relative_path)
                 end
               end
               Jekyll.logger.debug "LiveReload:", "Ignoring #{ignore.map(&:relative_path)}"
@@ -169,12 +168,12 @@ module Jekyll
             @changed_pages = nil
           end
         end
-        # rubocop:enable Metrics/AbcSize
 
         # Do a base pre-setup of WEBRick so that everything is in place
         # when we get ready to party, checking for an setting up an error page
         # and making sure our destination exists.
-
+        #
+        # rubocop:disable Security/IoMethods
         def setup(destination)
           require_relative "serve/servlet"
 
@@ -188,12 +187,14 @@ module Jekyll
             end
           end
         end
+        # rubocop:enable Security/IoMethods
 
         def webrick_opts(opts)
           opts = {
             :JekyllOptions      => opts,
             :DoNotReverseLookup => true,
             :MimeTypes          => mime_types,
+            :MimeTypesCharset   => mime_types_charset,
             :DocumentRoot       => opts["destination"],
             :StartCallback      => start_callback(opts["detach"]),
             :StopCallback       => stop_callback(opts["detach"]),
@@ -242,7 +243,7 @@ module Jekyll
         def format_url(ssl_enabled, address, port, baseurl = nil)
           format("%<prefix>s://%<address>s:%<port>i%<baseurl>s",
                  :prefix  => ssl_enabled ? "https" : "http",
-                 :address => address,
+                 :address => address.include?(":") ? "[#{address}]" : address,
                  :port    => port,
                  :baseurl => baseurl ? "#{baseurl}/" : "")
         end
@@ -262,8 +263,7 @@ module Jekyll
           return system "xdg-open", address if Utils::Platforms.linux?
           return system "open", address if Utils::Platforms.osx?
 
-          Jekyll.logger.error "Refusing to launch browser; " \
-            "Platform launcher unknown."
+          Jekyll.logger.error "Refusing to launch browser. Platform launcher unknown."
         end
 
         # Keep in our area with a thread or detach the server as requested
@@ -272,13 +272,19 @@ module Jekyll
         def boot_or_detach(server, opts)
           if opts["detach"]
             pid = Process.fork do
+              # Detach the process from controlling terminal
+              $stdin.reopen("/dev/null", "r")
+              $stdout.reopen("/dev/null", "w")
+              $stderr.reopen("/dev/null", "w")
               server.start
             end
 
             Process.detach(pid)
-            Jekyll.logger.info "Server detached with pid '#{pid}'.", \
-                               "Run `pkill -f jekyll' or `kill -9 #{pid}'" \
-                               " to stop the server."
+            Jekyll.logger.info "Server detached with pid '#{pid}'.",
+                               "Run `pkill -f jekyll' or `kill -9 #{pid}' to stop the server."
+
+            # Exit without running `at_exit` inherited by the forked process.
+            Process.exit! 0
           else
             t = Thread.new { server.start }
             trap("INT") { server.shutdown }
@@ -351,6 +357,10 @@ module Jekyll
         def mime_types
           file = File.expand_path("../mime.types", __dir__)
           WEBrick::HTTPUtils.load_mime_types(file)
+        end
+
+        def mime_types_charset
+          SafeYAML.load_file(File.expand_path("serve/mime_types_charset.json", __dir__))
         end
 
         def read_file(source_dir, file_path)

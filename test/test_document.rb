@@ -77,6 +77,14 @@ class TestDocument < JekyllUnitTest
       assert_equal Time.now.strftime("%Y/%m/%d"), @document.to_liquid["date"].strftime("%Y/%m/%d")
     end
 
+    should "not mutate its data when resolving a fallback date" do
+      refute @document.data.key?("date")
+
+      @document.to_liquid["date"]
+
+      refute @document.data.key?("date")
+    end
+
     should "be jsonify-able" do
       page_json = @document.to_liquid.to_json
       parsed = JSON.parse(page_json)
@@ -158,6 +166,23 @@ class TestDocument < JekyllUnitTest
 
     should "output its relative path as path in Liquid" do
       assert_equal "_methods/configuration.md", @document.to_liquid["path"]
+    end
+
+    context "when rendered with Liquid" do
+      should "respect the front matter definition" do
+        site = fixture_site("collections" => ["roles"]).tap(&:process)
+        docs = site.collections["roles"].docs
+
+        # Ruby context: doc.basename is aliased as doc.to_liquid["name"] by default.
+
+        document = docs.detect { |d| d.relative_path == "_roles/unnamed.md" }
+        assert_equal "unnamed.md", document.basename
+        assert_equal "unnamed.md", document.to_liquid["name"]
+
+        document = docs.detect { |d| d.relative_path == "_roles/named.md" }
+        assert_equal "named.md", document.basename
+        assert_equal "launcher", document.to_liquid["name"]
+      end
     end
   end
 
@@ -507,7 +532,7 @@ class TestDocument < JekyllUnitTest
     end
 
     should "be a static file" do
-      assert @document.is_a?(StaticFile)
+      assert_kind_of StaticFile, @document
     end
 
     should "be set to write" do

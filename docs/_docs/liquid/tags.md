@@ -15,7 +15,7 @@ If you have page snippets that you use repeatedly across your site, an
 ## Code snippet highlighting
 
 Jekyll has built in support for syntax highlighting of over 100 languages
-thanks to [Rouge](http://rouge.jneen.net). Rouge is the default highlighter
+thanks to [Rouge](https://github.com/rouge-ruby/rouge). Rouge is the default highlighter
 in Jekyll 3 and above.
 
 {: .note .warning}
@@ -65,6 +65,26 @@ end
 {% endhighlight %}
 ```
 {% endraw %}
+
+### Marking specific lines {%- include docs_version_badge.html version="4.4.0" -%}
+{: #marking-specific-lines }
+
+You can mark specific lines in a code snippet by using the optional
+argument `mark_lines`. This argument takes a space-separated list of
+line numbers which must be wrapped in double quotes. For example, the
+following code block will mark lines 1 and 2 but not line 3:
+
+{% raw %}
+```liquid
+{% highlight ruby mark_lines="1 2" %}
+def foo
+  puts 'foo'
+end
+{% endhighlight %}
+```
+{% endraw %}
+
+A default class name of `hll` will be applied to the marked lines.
 
 ### Stylesheets for syntax highlighting
 
@@ -166,5 +186,27 @@ You can also use this tag to create a link to a post in Markdown as follows:
 {% raw %}
 ```liquid
 [Name of Link]({% post_url 2010-07-21-name-of-post %})
+```
+{% endraw %}
+
+Now lets say you have a [datafile]({{ '/docs/datafiles/' | relative_url }}) `_data/cool_posts.yaml` used to keep track
+of certain posts that you intend to be listed as say *Cool Posts*:
+
+```yaml
+- title: "An Awesome Post"
+  slug: "2010-07-21-name-of-post"
+- title: "Another Awesome Post"
+  slug: "2016-07-26-name-of-post"
+```
+
+You may list such posts using the `post_url` tag as well (from {%- include docs_version_badge.html version="4.5.0" -%}):
+
+{% raw %}
+```liquid
+Cool posts:
+
+{%- for cool_post in site.data.cool_posts %}
+- [{{ cool_post.title }}]({% post_url {{ cool_post.slug }} %})
+{%- endfor %}
 ```
 {% endraw %}

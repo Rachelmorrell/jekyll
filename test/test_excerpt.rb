@@ -111,8 +111,7 @@ class TestExcerpt < JekyllUnitTest
     context "#content" do
       context "before render" do
         should "be the first paragraph of the page" do
-          expected = "First paragraph with [link ref][link].\n\n[link]: "\
-                     "https://jekyllrb.com/"
+          expected = "First paragraph with [link ref][link].\n\n[link]: https://jekyllrb.com/"
           assert_equal expected, @excerpt.content
         end
 
@@ -129,7 +128,7 @@ class TestExcerpt < JekyllUnitTest
         end
 
         should "be the first paragraph of the page" do
-          expected = "<p>First paragraph with <a href=\"https://jekyllrb.com/\">link "\
+          expected = "<p>First paragraph with <a href=\"https://jekyllrb.com/\">link " \
                      "ref</a>.</p>\n\n"
           assert_equal expected, @extracted_excerpt.output
         end
@@ -146,7 +145,7 @@ class TestExcerpt < JekyllUnitTest
         end
 
         should "contain all refs at the bottom of the page" do
-          (0..3).each do |i|
+          4.times do |i|
             assert_match "[link_#{i}]: www.example.com/#{i}", @excerpt.content
           end
         end
@@ -159,7 +158,7 @@ class TestExcerpt < JekyllUnitTest
           @rendered_post = @post.dup
           do_render(@rendered_post)
           output = @rendered_post.data["excerpt"].output
-          (0..3).each do |i|
+          4.times do |i|
             assert_includes output, "<a href=\"www.example.com/#{i}\">"
           end
         end
@@ -176,7 +175,7 @@ class TestExcerpt < JekyllUnitTest
     end
 
     should "be generated" do
-      assert @excerpt.is_a?(Jekyll::Excerpt)
+      assert_kind_of Jekyll::Excerpt, @excerpt
     end
 
     context "#content" do
@@ -204,7 +203,7 @@ class TestExcerpt < JekyllUnitTest
     should "be appended to as necessary and generated" do
       assert_includes @excerpt.content, "{% endraw %}"
       assert_includes @excerpt.content, "{% endhighlight %}"
-      assert @excerpt.is_a?(Jekyll::Excerpt)
+      assert_kind_of Jekyll::Excerpt, @excerpt
     end
   end
 
@@ -228,7 +227,7 @@ class TestExcerpt < JekyllUnitTest
       assert_includes @excerpt.content, "{%\n  endhighlight\n%}"
       refute_includes @excerpt.content, "{%\n  endraw\n%}\n\n{% endraw %}"
       refute_includes @excerpt.content, "{%\n  endhighlight\n%}\n\n{% endhighlight %}"
-      assert @excerpt.is_a?(Jekyll::Excerpt)
+      assert_kind_of Jekyll::Excerpt, @excerpt
     end
   end
 
@@ -246,7 +245,7 @@ class TestExcerpt < JekyllUnitTest
     should "be appended to as necessary and generated" do
       assert_includes @excerpt.content, "{% endfor %}"
       refute_includes @excerpt.content, "{% endfor %}\n\n{% endfor %}"
-      assert @excerpt.is_a?(Jekyll::Excerpt)
+      assert_kind_of Jekyll::Excerpt, @excerpt
     end
   end
 
@@ -264,7 +263,7 @@ class TestExcerpt < JekyllUnitTest
     should "not be appended to but generated as is" do
       assert_includes @excerpt.content, "{%- endfor -%}"
       refute_includes @excerpt.content, "{% endfor %}\n\n{% endfor %}"
-      assert @excerpt.is_a?(Jekyll::Excerpt)
+      assert_kind_of Jekyll::Excerpt, @excerpt
     end
   end
 
@@ -280,7 +279,7 @@ class TestExcerpt < JekyllUnitTest
 
     should "not be appended to but generated as is" do
       assert_includes @excerpt.content, "{{- xyzzy -}}"
-      assert @excerpt.is_a?(Jekyll::Excerpt)
+      assert_kind_of Jekyll::Excerpt, @excerpt
     end
   end
 
@@ -305,7 +304,7 @@ class TestExcerpt < JekyllUnitTest
       assert_includes @excerpt.content, "{% endunless %}"
       assert_includes @excerpt.content, "{% enddo_nothing %}"
       refute_includes @excerpt.content, "{% enddo_nothing_other %}"
-      assert @excerpt.is_a?(Jekyll::Excerpt)
+      assert_kind_of Jekyll::Excerpt, @excerpt
     end
   end
 end

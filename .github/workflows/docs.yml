@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - master
+    paths:
+      - "docs/**"
 
 env:
-  RUBY_VERSION: 2.7
+  RUBY_VERSION: 3.4
 
 jobs:
   deploy_docs:
@@ -17,7 +19,7 @@ jobs:
       BUNDLE_JOBS: 4
       BUNDLE_RETRY: 3
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ env.RUBY_VERSION }}

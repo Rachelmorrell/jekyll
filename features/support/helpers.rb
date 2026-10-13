@@ -18,6 +18,13 @@ class Paths
   def self.source_dir; SOURCE_DIR; end
 end
 
+class Platform
+  REF_FILE = File.expand_path("../../test/source/symlink-test/symlinked-file", __dir__)
+
+  def self.supports_symlink?; File.symlink?(REF_FILE); end
+end
+
+
 #
 
 def file_content_from_hash(input_hash)
@@ -137,25 +144,6 @@ def file_contents(path)
 end
 
 #
-
-def seconds_agnostic_datetime(datetime = Time.now)
-  date, time, zone = datetime.to_s.split(" ")
-  time = seconds_agnostic_time(time)
-
-  [
-    Regexp.escape(date),
-    "#{time}:\\d{2}",
-    Regexp.escape(zone),
-  ].join("\\ ")
-end
-
-#
-
-def seconds_agnostic_time(time)
-  time = time.strftime("%H:%M:%S") if time.is_a?(Time)
-  hour, minutes, = time.split(":")
-  "#{hour}:#{minutes}"
-end
 
 # Helper method for Windows
 def dst_active?

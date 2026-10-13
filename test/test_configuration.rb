@@ -73,6 +73,7 @@ class TestConfiguration < JekyllUnitTest
       exclude = @config["exclude"]
       assert_includes exclude, ".sass-cache"
       assert_includes exclude, ".jekyll-cache"
+      assert_includes exclude, ".ruby-lsp"
     end
   end
 
@@ -154,9 +155,9 @@ class TestConfiguration < JekyllUnitTest
     end
 
     should "always return an array" do
-      assert @config.config_files(@no_override).is_a?(Array)
-      assert @config.config_files(@one_config_file).is_a?(Array)
-      assert @config.config_files(@multiple_files).is_a?(Array)
+      assert_kind_of Array, @config.config_files(@no_override)
+      assert_kind_of Array, @config.config_files(@one_config_file)
+      assert_kind_of Array, @config.config_files(@multiple_files)
     end
 
     should "return the default config path if no config files are specified" do

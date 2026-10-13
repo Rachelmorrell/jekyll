@@ -4,21 +4,11 @@ permalink: /docs/deployment/third-party/
 ---
 
 
-## Aerobatic
-
-[Aerobatic](https://www.aerobatic.com) has custom domains, global CDN distribution, basic auth, CORS proxying, and a growing list of plugins all included.
-
-Automating the deployment of a Jekyll site is simple. See their [Jekyll docs](https://www.aerobatic.com/docs/static-site-generators/#jekyll) for more details. Your built `_site` folder is deployed to their highly-available, globally distributed hosting service.
-
 ## AWS Amplify
 
 The [AWS Amplify Console](https://console.amplify.aws) provides continuous deployment and hosting for modern web apps (single page apps and static site generators). Continuous deployment allows developers to deploy updates to their web app on every code commit to their Git repository. Hosting includes features such as globally available CDNs, 1-click custom domain setup + HTTPS, feature branch deployments, redirects, trailing slashes, and password protection.
 
 Read this [step-by-step guide](https://medium.com/@jameshamann/deploy-your-jekyll-site-using-aws-amplify-with-only-a-few-clicks-8f3dd8f26112) to deploy and host your Jekyll site on AWS Amplify.
-
-## Bip
-
-[Bip](https://bip.sh) provides zero downtime deployment, a global CDN, SSL, unlimited bandwidth and more for Jekyll websites. Deploy in seconds from the command line. [Visit the Bip website](https://bip.sh) for more information - which is also built with Jekyll.
 
 ## CloudCannon
 
@@ -26,13 +16,19 @@ Read this [step-by-step guide](https://medium.com/@jameshamann/deploy-your-jekyl
 and update Jekyll websites. Take advantage of our global CDN, automated SSL,
 continuous deployment and [more](https://cloudcannon.com/features/).
 
+## DeployHQ
+
+[DeployHQ](https://www.deployhq.com) is a Git-based deployment service that builds your Jekyll site on its own infrastructure and transfers the rendered `_site/` directory to your own server over SSH, SFTP, FTP, or to cloud storage such as Amazon S3, Azure Blob Storage, or Rackspace Cloud Files. You connect a GitHub, GitLab, or Bitbucket repository, point each environment at a branch, and every push triggers a build.
+
+Build pipelines can run any shell command, so a typical Jekyll project runs `bundle install` followed by `bundle exec jekyll build` and ships the contents of `_site/` to your webroot. Each release is atomic, with one-click rollback, deploy hooks, and per-environment config-file injection — useful for keeping `_config.yml` overrides or `.env` values out of your repository. Multiple environments per project (for example staging and production mapped to different branches) are supported, and there is a free tier available at [deployhq.com/signup](https://www.deployhq.com/signup).
+
 ## GitHub Pages
 
 Sites on GitHub Pages are powered by Jekyll behind the scenes, so if you’re looking for a zero-hassle, zero-cost solution, GitHub Pages are a great way to [host your Jekyll-powered website for free](/docs/github-pages/).
 
 ## GitLab Pages
 
-[GitLab Pages](https://about.gitlab.com/stages-devops-lifecycle/pages/) offers free hosting with custom domains. [Get started with Jekyll](https://docs.gitlab.com/ee/user/project/pages/getting_started_part_four.html#practical-example) and a fully customizable pipeline.
+[GitLab Pages](https://about.gitlab.com/stages-devops-lifecycle/pages/) offers free hosting with custom domains. [Get started with Jekyll](https://docs.gitlab.com/ee/user/project/pages/getting_started/pages_from_scratch.html) and a fully customizable pipeline.
 
 ## KeyCDN
 
@@ -41,11 +37,11 @@ The [Jekyll hosting tutorial](https://www.keycdn.com/support/jekyll-hosting) pro
 
 ## Kickster
 
-Use [Kickster](http://kickster.nielsenramon.com/) for automated deploys to GitHub Pages when using unsupported plugins on GitHub Pages.
+Use [Kickster](https://kickster.nielsenramon.com/) for automated deploys to GitHub Pages when using unsupported plugins on GitHub Pages.
 
-Kickster provides a basic Jekyll project setup packed with web best practises and useful optimization tools increasing your overall project quality. Kickster ships with automated and worry-free deployment scripts for GitHub Pages.
+Kickster provides a basic Jekyll project setup packed with web best practices and useful optimization tools increasing your overall project quality. Kickster ships with automated and worry-free deployment scripts for GitHub Pages.
 
-Install the Kickster gem and you are good to go. More documentation can here found [here](https://github.com/nielsenramon/kickster#kickster). If you do not want to use the gem or start a new project you can just copy paste the deployment scripts for [Travis CI](https://github.com/nielsenramon/kickster/tree/master/snippets/travis) or [Circle CI](https://github.com/nielsenramon/kickster#automated-deployment-with-circle-ci).
+Install the Kickster gem and you are good to go. More documentation can be found [here](https://github.com/nielsenramon/kickster#kickster). If you do not want to use the gem or start a new project you can just copy paste the deployment scripts for [Travis CI](https://github.com/nielsenramon/kickster/tree/master/snippets/travis) or [Circle CI](https://github.com/nielsenramon/kickster#automated-deployment-with-circle-ci).
 
 ## Netlify
 
@@ -57,9 +53,9 @@ Read this [Jekyll step-by-step guide](https://www.netlify.com/blog/2020/04/02/a-
 
 [Render](https://render.com) provides zero config continuous deployment for static sites. The service is free under 100GB monthly bandwidth.
 
-## Hostman 
+## Hostman
 
-[Hostman](https://hostman.com) allows you to host websites for free with no configurations. Read [this guide](https://hostman.com/docs/jekyll) to deploy your Jekyll site on Hostman. 
+[Hostman](https://hostman.com) allows you to host websites for free with no configurations. Read [this guide](https://hostman.com/docs/jekyll) to deploy your Jekyll site on Hostman.
 
 ## Static Publisher
 
@@ -74,3 +70,27 @@ Read this [Jekyll step-by-step guide](https://www.netlify.com/blog/2020/04/02/a-
 [21YunBox](https://www.21yunbox.com) provides blazing fast Chinese CDN, Continuous Deployment, one click HTTPS and [much more](https://www.21yunbox.com/docs/), providing developers a hassle-free solution to launch their web projects in China.
 
 Read this [Jekyll step-by-step guide](https://www.21yunbox.com/docs/#/deploy-jekyll) to deploy your Jekyll site on 21YunBox.
+
+## Layer0
+
+[Layer0](https://www.layer0.co) is an all-in-one platform to develop, deploy, preview, experiment on, monitor, and run your headless frontend. It is focused on large, dynamic websites and best-in-class performance through EdgeJS (a JavaScript-based Content Delivery Network), predictive prefetching, and performance monitoring. Layer0 offers a free tier. Get started in just a few minutes by following [Layer0's guide to deploying Jekyll](https://docs.layer0.co/guides/jekyll).
+
+## Kinsta Application Hosting
+
+[Kinsta Application Hosting](https://kinsta.com/application-hosting) is a Cloud Platform designed to help your company and dev teams ship web projects faster and more efficiently. You can host your apps, databases, and sites all in one place. Easily connect with GitHub and automate deployments and get 24/7 support for all your favorite languages and frameworks.
+
+Read [this guide](https://kinsta.com/docs/jekyll-static-site-example/) to learn how to deploy Jekyll site on Kinsta.
+
+## Supranode
+
+[Supranode](https://supranode.com) offers customizable continuous deployment for static websites, featuring automatic HTTPS, a high-performance CDN, secret management, deployment previews, password protection, and more.
+
+## Azion
+
+[Azion](https://www.azion.com/en/) is an web platform that provides a wide range of services. It allows you to host static sites, including Jekyll-powered websites, with features like automatic HTTPS, custom domains, and real-time analytics. Azion's platform is designed for performance and scalability, making it an excellent choice for hosting global websites.
+
+In [this guide](https://www.azion.com/en/documentation/products/guides/jekyll-boilerplate/) you can learn how to deploy a Jekyll site on Azion.
+
+## harvis
+
+[harvis](https://harvis.dev) is zero-setup static hosting. Run `npx harvis` in your `_site` folder after `jekyll build` and it uploads the files as-is and prints a live URL — no account, no config. Run it again to update the same site. Free for small sites.

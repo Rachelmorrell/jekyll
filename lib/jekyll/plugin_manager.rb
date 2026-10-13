@@ -83,7 +83,7 @@ module Jekyll
     # Returns an array of strings, each string being the name of a gem name
     #   that is allowed to be used.
     def whitelist
-      @whitelist ||= Array[site.config["whitelist"]].flatten
+      @whitelist ||= [site.config["whitelist"]].flatten
     end
 
     # Require all .rb files if safe mode is off
@@ -113,9 +113,10 @@ module Jekyll
       pagination_included = (site.config["plugins"] || []).include?("jekyll-paginate") ||
         defined?(Jekyll::Paginate)
       if site.config["paginate"] && !pagination_included
-        Jekyll::Deprecator.deprecation_message "You appear to have pagination " \
-          "turned on, but you haven't included the `jekyll-paginate` gem. " \
-          "Ensure you have `plugins: [jekyll-paginate]` in your configuration file."
+        Jekyll::Deprecator.deprecation_message <<~MSG
+          You appear to have pagination turned on, but you haven't included the `jekyll-paginate`
+          gem. Ensure you have `plugins: [jekyll-paginate]` in your configuration file.
+        MSG
       end
     end
   end

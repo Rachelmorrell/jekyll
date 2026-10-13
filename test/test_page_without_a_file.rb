@@ -64,7 +64,7 @@ class TestPageWithoutAFile < JekyllUnitTest
         assert_equal "All the properties.\n", regular_page["content"]
         assert_equal "properties.html", regular_page["name"]
 
-        basic_attrs = %w(dir name path url excerpt)
+        basic_attrs = %w(dir name path url)
         attrs = {
           "content"   => nil,
           "dir"       => "/",
@@ -164,8 +164,8 @@ class TestPageWithoutAFile < JekyllUnitTest
         refute_path_exists(dest_dir("virtual-about", "index.html"))
       end
 
-      should "be processed and written to destination when passed as "\
-        "an entry in 'site.pages' array" do
+      should "be processed and written to destination when passed as an entry in " \
+             "'site.pages' array" do
         @page.content = "{{ site.title }}"
         @page.data["permalink"] = "/virtual-about/"
 

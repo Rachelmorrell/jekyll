@@ -179,8 +179,8 @@ module Jekyll
       private
 
       def could_not_locate_message(file, includes_dirs, safe)
-        message = "Could not locate the included file '#{file}' in any of "\
-          "#{includes_dirs}. Ensure it exists in one of those directories and"
+        message = "Could not locate the included file '#{file}' in any of #{includes_dirs}. " \
+                  "Ensure it exists in one of those directories and"
         message + if safe
                     " is not a symlink as those are not allowed in safe mode."
                   else
@@ -249,6 +249,11 @@ module Jekyll
     end
 
     class IncludeRelativeTag < IncludeTag
+      def load_cached_partial(path, context)
+        context.registers[:cached_partials] ||= {}
+        context.registers[:cached_partials][path] ||= parse_partial(path, context)
+      end
+
       def tag_includes_dirs(context)
         Array(page_path(context)).freeze
       end
@@ -266,6 +271,17 @@ module Jekyll
         path = page["path"]
         path = File.join(site.config["collections_dir"], path) if page["collection"]
         path.delete_suffix("/#excerpt")
+      end
+
+      # Since Jekyll 4 caches convertibles based on their path within the only instance of
+      # `LiquidRenderer`, initialize a new LiquidRenderer instance on every render of this
+      # tag to bypass caching rendered output of page / document.
+      def parse_partial(path, context)
+        LiquidRenderer.new(context.registers[:site]).file(path).parse(read_file(path, context))
+      rescue Liquid::Error => e
+        e.template_name = path
+        e.markup_context = "included " if e.markup_context.nil?
+        raise e
       end
     end
   end

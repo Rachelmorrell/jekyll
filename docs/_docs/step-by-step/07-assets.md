@@ -17,20 +17,20 @@ Jekyll sites often use this structure to keep assets organized:
 ...
 ```
 So, from your assets folder, create folders called css, images and js.
-Additionally, directly under the root create another folder called '_sass', which you will need shortly.
+Additionally, directly under the root create another folder called `_sass`, which you will need shortly.
 
 ## Sass
 
 Inlining the styles used in `_includes/navigation.html`(adding or configuring within the same file) is not a best practice.
 Instead, let's style the current page by defining our first class in a new css file instead. 
 
-To do this, refer to the class (that you will configure in the next parts of this step) from within the navigation.html file by removing the code you added earlier (to color the current link red) and inserting the following code:
+To do this, refer to the class (that you will configure in the next parts of this step) from within the `navigation.html` file by removing the code you added earlier (to color the current link red) and inserting the following code:
 
 {% raw %}
 ```liquid
 <nav>
   {% for item in site.data.navigation %}
-    <a href="{{ item.link }}" {% if page.url == item.link %}class="current"{% endif %}>{{ item.name }}</a>
+    <a href="{{ item.link }}"{% if page.url == item.link %} class="current"{% endif %}>{{ item.name }}</a>
   {% endfor %}
 </nav>
 ```
@@ -50,7 +50,7 @@ First create a Sass file at `assets/css/styles.scss` with the following content:
 
 The empty front matter at the top tells Jekyll it needs to process the file. The
 `@import "main"` tells Sass to look for a file called `main.scss` in the sass
-directory (`_sass/`) by default which you already created directly under the root folder of your website).
+directory (`_sass/` by default) you already created at the root of your working directory earlier.
 
 At this stage you'll just have a main css file. For larger projects, this is a
 great way to keep your CSS organized.

@@ -7,8 +7,7 @@ module Jekyll
         def init_with_program(prog)
           prog.command(:clean) do |c|
             c.syntax "clean [subcommand]"
-            c.description "Clean the site " \
-                  "(removes site output and metadata file) without building."
+            c.description "Clean the site (removes site output and metadata file) without building."
 
             add_build_options(c)
 
@@ -20,12 +19,13 @@ module Jekyll
 
         def process(options)
           options = configuration_from_options(options)
-          destination = options["destination"]
           metadata_file = File.join(options["source"], ".jekyll-metadata")
           cache_dir = File.join(options["source"], options["cache_dir"])
           sass_cache = ".sass-cache"
 
-          remove(destination, :checker_func => :directory?)
+          site = Jekyll::Site.new(options)
+          site.cleanup
+
           remove(metadata_file, :checker_func => :file?)
           remove(cache_dir, :checker_func => :directory?)
           remove(sass_cache, :checker_func => :directory?)
